@@ -7,6 +7,8 @@ use \Psr\Http\Message\RequestInterface  as  RequestInterface;
 use \Psr\Http\Message\UriInterface      as  UriInterface;
 
 use \pillr\library\http\Message         as  Message;
+use Psr\Log\InvalidArgumentException;
+
 /**
  * Representation of an outgoing, client-side request.
  *
@@ -26,9 +28,19 @@ use \pillr\library\http\Message         as  Message;
  * be implemented such that they retain the internal state of the current
  * message and return an instance that contains the changed state.
  */
-class Request extends Message implements RequestInterface
-{
+class Request extends Message implements RequestInterface{
+    protected $method;
+    private $possible_methods = ['GET', 'POST'];
 
+    function __construct($protocol, $method, UriInterface $uri){
+        parent::__construct($protocol);
+
+        if (in_array($method, $this->possible_methods)) {
+            $this->method = $method;
+        }else{
+            throw new InvalidArgumentException("Invalid method: $method");
+        }
+    }
 
     /**
      * Retrieves the message's request target.
@@ -80,7 +92,7 @@ class Request extends Message implements RequestInterface
      */
     public function getMethod()
     {
-
+        return $this->method;
     }
 
     /**

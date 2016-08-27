@@ -20,6 +20,15 @@ class Message implements MessageInterface
 {
 
     protected $protocol, $header, $body;
+    private $possible_protocols = ['1.0', '1.1', '2.0'];
+
+    function __construct($protocol){
+        if (in_array($protocol, $this->possible_protocols)) {
+            $this->protocol = (string)$protocol; // TODO: Move validity check into seperate function
+        }else{
+            throw new \InvalidArgumentException("Invalid HTTP Protocol: $protocol");
+        }
+    }
 
     /**
      * Retrieves the HTTP protocol version as a string.
@@ -48,10 +57,9 @@ class Message implements MessageInterface
      */
     public function withProtocolVersion($version)
     {
-        if($this->protocol == $version){
+        if ($this->protocol == $version) {
             return $this;
-        }
-        else {
+        } else {
             $new = clone $this;
             $new->protocol = $version;
             return $new;

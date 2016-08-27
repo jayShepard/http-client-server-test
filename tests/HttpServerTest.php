@@ -6,7 +6,7 @@ use \pillr\library\http\Request  as HttpRequest;
 use \pillr\library\http\Response as HttpResponse;
 use \pillr\library\http\Uri      as Uri;
 
-class TestHttpServer extends PHPUnit_Framework_TestCase {
+class TestHttpServer extends \PHPUnit_Framework_TestCase {
 
     public function testRequest()
     {
