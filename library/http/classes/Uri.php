@@ -193,7 +193,9 @@ class Uri implements UriInterface
      */
     public function getPath()
     {
-
+        $path = $this->array_value_or_empty_string("path");
+        $path = urldecode($path); // decodes first to ensure no double-encoding
+        return urlencode($path);
     }
 
     /**
@@ -218,7 +220,8 @@ class Uri implements UriInterface
      */
     public function getQuery()
     {
-
+        $query = $this->array_value_or_empty_string("query");
+        return urlencode($query);
     }
 
     /**
@@ -239,7 +242,8 @@ class Uri implements UriInterface
      */
     public function getFragment()
     {
-
+        $fragment = $this->array_value_or_empty_string("fragment");
+        return urlencode($fragment);
     }
 
     /**
@@ -384,7 +388,14 @@ class Uri implements UriInterface
      */
     public function withFragment($fragment)
     {
-
+        $new = clone $this;
+        if(empty($fragment)){
+            unset($new->parsed_uri['fragment']);
+        }else{
+            $fragment = urldecode($fragment); // decodes first to ensure no double-encoding
+            $new->parsed_uri['fragment'] = $fragment;
+        }
+        return $new;
     }
 
     /**
@@ -410,9 +421,28 @@ class Uri implements UriInterface
      * @see http://tools.ietf.org/html/rfc3986#section-4.1
      * @return string
      */
-    public function __toString()
+    @ public function __toString()
     {
-        
+        $uri = "";
+
+        $scheme = $this->getScheme();
+        $authority = $this->getAuthority();
+        $path = $this->getPath();
+        $query = $this->getQuery();
+        $fragment = $this->getFragment();
+
+        // Ensuring beginning of path is free of all '/'
+        // so the coming if statement can add one back on
+        // safely.
+        $path = ltrim($path, '/');
+
+        if (!empty($scheme)) {$uri .= "$scheme:";}
+        if (!empty($authority)) { $uri .="//$authority";}
+        if (!empty($path)) {$uri .="/$path";}
+        if (!empty($query)) {$uri .= "?$query";}
+        if (!empty($fragment)) {$uri .= "#$fragment";}
+
+        return $uri;
     }
 
 }
