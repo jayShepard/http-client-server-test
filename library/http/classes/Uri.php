@@ -37,7 +37,7 @@ class Uri implements UriInterface
     }
 
     private function array_value_or_empty_string($key){
-        return (array_key_exists($key, $this->parsed_uri) ? $this->parsed_uri : '');
+        return (array_key_exists($key, $this->parsed_uri) ? $this->parsed_uri[$key] : '');
     }
 
     /**
@@ -421,7 +421,7 @@ class Uri implements UriInterface
      * @see http://tools.ietf.org/html/rfc3986#section-4.1
      * @return string
      */
-    @ public function __toString()
+    public function __toString()
     {
         $uri = "";
 

@@ -6,10 +6,19 @@ use \pillr\library\http\Request  as HttpRequest;
 use \pillr\library\http\Response as HttpResponse;
 use \pillr\library\http\Uri      as Uri;
 
-class TestHttpServer extends \PHPUnit_Framework_TestCase {
+class TestHttpServer extends PHPUnit_Framework_TestCase {
 
-    public function testRequest()
-    {
+    public function testUri(){
+        $uri_string = 'https://pillrcompany.com/interns/test?psr=true';
+        $uri = new Uri($uri_string);
+
+        $this->assertEquals(
+            $uri->__toString(),
+            $uri_string
+        );
+    }
+
+    public function testRequest() {
         // *
  // * - Protocol version
  // * - HTTP method
