@@ -60,7 +60,7 @@ class Request extends Message implements RequestInterface{
      */
     public function getRequestTarget()
     {
-
+        return "/";
     }
 
     /**

@@ -24,7 +24,22 @@ use \Psr\Http\Message\UriInterface as UriInterface;
  */
 class Uri implements UriInterface
 {
-    
+    protected $parsed_uri;
+
+    private $uri_ports = [
+        'http' => 80,
+        'https' => 443,
+        'ftp' => 21,
+    ];
+
+    function __construct($uri_string) {
+        $this->parsed_uri = parse_url($uri_string);
+    }
+
+    private function array_value_or_empty_string($key){
+        return (array_key_exists($key, $this->parsed_uri) ? $this->parsed_uri : '');
+    }
+
     /**
      * Retrieve the scheme component of the URI.
      *
@@ -41,7 +56,8 @@ class Uri implements UriInterface
      */
     public function getScheme()
     {
-
+        $scheme = $this->array_value_or_empty_string("scheme");
+        return strtolower($scheme);
     }
 
     /**
@@ -64,7 +80,20 @@ class Uri implements UriInterface
      */
     public function getAuthority()
     {
-
+        $authority = "";
+        $user_info = $this->getUserInfo();
+        $host = $this->getHost();
+        $port = $this->getPort();
+        if($user_info !== ""){
+            $authority .= "$user_info@";
+        }
+        if($host !== ""){
+            $authority .= $host;
+        }
+        if($port !== null){
+            $authority .= ":port";
+        }
+        return $authority;
     }
 
     /**
@@ -84,7 +113,14 @@ class Uri implements UriInterface
      */
     public function getUserInfo()
     {
-
+        $user_info = '';
+        if (array_key_exists('user', $this->parsed_uri)){
+            $user_info .= $this->parsed_uri['user'];
+        }
+        if (array_key_exists('pass', $this->parsed_uri)){
+            $user_info .= ":$this->parsed_uri['pass']";
+        }
+        return $user_info;
     }
 
     /**
@@ -100,7 +136,8 @@ class Uri implements UriInterface
      */
     public function getHost()
     {
-
+        $host = $this->array_value_or_empty_string("host");
+        return strtolower($host);
     }
 
     /**
@@ -118,9 +155,15 @@ class Uri implements UriInterface
      *
      * @return null|int The URI port.
      */
-    public function getPort()
+    public function getPort() // TODO: review this, not super happy with it
     {
-
+        if(!array_key_exists('scheme', $this->parsed_uri) && !array_key_exists('port', $this->parsed_uri)){
+            return null;
+        } elseif(!($this->parsed_uri['port'] == $this->uri_ports[$this->getScheme()])){
+            return (int) $this->parsed_uri['port'];
+        } else{
+            return null | $this->uri_ports[$this->getScheme()];
+        }
     }
 
     /**

@@ -23,8 +23,8 @@ class Message implements MessageInterface
     private $possible_protocols = ['1.0', '1.1', '2.0'];
 
     function __construct($protocol){
-        if (in_array($protocol, $this->possible_protocols)) {
-            $this->protocol = (string)$protocol; // TODO: Move validity check into seperate function
+        if (in_array($protocol, $this->possible_protocols)) { // TODO: Move validity check into seperate function
+            $this->protocol = (string)$protocol;
         }else{
             throw new \InvalidArgumentException("Invalid HTTP Protocol: $protocol");
         }
