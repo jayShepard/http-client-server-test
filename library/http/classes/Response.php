@@ -23,6 +23,14 @@ use \pillr\library\http\Message         as  Message;
  */
 class Response extends Message implements ResponseInterface
 {
+    protected $status_code, $status_reason;
+
+    function __construct($protocol, $body, $status_code, $status_reason = ""){
+        parent::__construct($protocol, $body);
+        $this->status_code = $status_code;
+        $this->status_reason = $status_reason;
+    }
+
     /**
      * Gets the response status code.
      *
@@ -33,7 +41,7 @@ class Response extends Message implements ResponseInterface
      */
     public function getStatusCode()
     {
-
+        return (int) $this->status_code;
     }
 
     /**
@@ -58,7 +66,11 @@ class Response extends Message implements ResponseInterface
      */
     public function withStatus($code, $reasonPhrase = '')
     {
+        $new = clone $this;
+        $new->status_code = $code;
+        $new->status_reason = $reasonPhrase;
 
+        return $new;
     }
 
     /**
@@ -76,6 +88,6 @@ class Response extends Message implements ResponseInterface
      */
     public function getReasonPhrase()
     {
-
+        empty($this->status_reason) ? "" : $this->status_reason;
     }
 }
