@@ -22,9 +22,10 @@ class Message implements MessageInterface
     protected $protocol, $header, $body;
     private $possible_protocols = ['1.0', '1.1', '2.0'];
 
-    function __construct($protocol){
+    function __construct($protocol, StreamInterface $body){
         if (in_array($protocol, $this->possible_protocols)) { // TODO: Move validity check into seperate function
             $this->protocol = (string)$protocol;
+            $this->body = $body;
         }else{
             throw new \InvalidArgumentException("Invalid HTTP Protocol: $protocol");
         }
@@ -218,7 +219,7 @@ class Message implements MessageInterface
      */
     public function getBody()
     {
-
+        return $this->body;
     }
 
     /**

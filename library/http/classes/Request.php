@@ -4,6 +4,7 @@ namespace pillr\library\http;
 
 
 use \Psr\Http\Message\RequestInterface  as  RequestInterface;
+use Psr\Http\Message\StreamInterface;
 use \Psr\Http\Message\UriInterface      as  UriInterface;
 
 use \pillr\library\http\Message         as  Message;
@@ -32,7 +33,7 @@ class Request extends Message implements RequestInterface{
     protected $method, $uri, $message;
     private $possible_methods = ['GET', 'POST'];
 
-    function __construct($protocol, $method, UriInterface $uri, $body){
+    function __construct($protocol, $method, UriInterface $uri, StreamInterface $body){
         parent::__construct($protocol, $body);
         $this->method = $method;
         $this->uri =$uri;
@@ -56,7 +57,7 @@ class Request extends Message implements RequestInterface{
      */
     public function getRequestTarget()
     {
-        return empty($this->uri) ? "/" : $this->uri.__toString();
+        return empty($this->uri) ? "/" : "$this->uri";
     }
 
     /**

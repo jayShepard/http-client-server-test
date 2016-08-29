@@ -12,6 +12,12 @@ use \Psr\Http\Message\StreamInterface as StreamInterface;
  */
 class Stream implements StreamInterface
 {
+    protected $stream;
+
+    function __construct($source){
+        $this->stream = fopen($source);
+    }
+
     /**
      * Reads all data from the stream into a string, from the beginning to end.
      *
@@ -38,7 +44,7 @@ class Stream implements StreamInterface
      */
     public function close()
     {
-
+        fclose($this->stream);
     }
 
     /**
@@ -60,7 +66,7 @@ class Stream implements StreamInterface
      */
     public function getSize()
     {
-
+        return (int) $this->getMetadata("wrapper_data")[9];
     }
 
     /**
@@ -71,7 +77,7 @@ class Stream implements StreamInterface
      */
     public function tell()
     {
-
+        ftell($this->stream);
     }
 
     /**
@@ -81,7 +87,7 @@ class Stream implements StreamInterface
      */
     public function eof()
     {
-
+        feof($this->stream);
     }
 
     /**
@@ -91,7 +97,7 @@ class Stream implements StreamInterface
      */
     public function isSeekable()
     {
-
+        return (bool) $this->getMetadata('seekable');
     }
 
     /**
@@ -108,7 +114,7 @@ class Stream implements StreamInterface
      */
     public function seek($offset, $whence = SEEK_SET)
     {
-
+        fseek($this->stream, $offset, $whence);
     }
 
     /**
@@ -123,7 +129,9 @@ class Stream implements StreamInterface
      */
     public function rewind()
     {
-
+        if(fseek($this->stream, 0) == -1){ //TODO: confirm this works
+            throw new \RuntimeException("Steam is not seekable");
+        }
     }
 
     /**
@@ -143,9 +151,13 @@ class Stream implements StreamInterface
      * @return int Returns the number of bytes written to the stream.
      * @throws \RuntimeException on failure.
      */
-    public function write($string)
-    {
-
+    public function write($string){
+        $written = fwrite($this->stream, $string);
+        if (!$written){
+            throw new \RuntimeException("Unable to write");
+        } else{
+            return $written;
+        }
     }
 
     /**
@@ -170,7 +182,12 @@ class Stream implements StreamInterface
      */
     public function read($length)
     {
-
+        $data = fread($this->stream, $length);
+        if (!$data){
+            throw new \RuntimeException("Read error");
+        }else{
+            return empty($data) ? "" : $data;
+        }
     }
 
     /**
@@ -182,7 +199,12 @@ class Stream implements StreamInterface
      */
     public function getContents()
     {
-
+        $content = stream_get_contents($this->stream);
+        if (!$content){
+            throw new \RuntimeException("Read error");
+        }else{
+            return $content;
+        }
     }
 
     /**
@@ -199,6 +221,11 @@ class Stream implements StreamInterface
      */
     public function getMetadata($key = null)
     {
-        
+       $meta =  stream_get_meta_data($this->stream);
+        if ($key){
+            empty($meta["$key"]) ? null : $meta["$key"];
+        }else{
+            return $meta;
+        }
     }
 }

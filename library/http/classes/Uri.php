@@ -40,6 +40,11 @@ class Uri implements UriInterface
         return (array_key_exists($key, $this->parsed_uri) ? $this->parsed_uri[$key] : '');
     }
 
+    private function percent_encode($string, $delimiter){
+        list($k, $v) = explode($delimiter, $string);
+        $result[ $k ] = $v;
+    }
+
     /**
      * Retrieve the scheme component of the URI.
      *
@@ -157,13 +162,7 @@ class Uri implements UriInterface
      */
     public function getPort() // TODO: review this, not super happy with it
     {
-        if(!array_key_exists('scheme', $this->parsed_uri) && !array_key_exists('port', $this->parsed_uri)){
-            return null;
-        } elseif(!($this->parsed_uri['port'] == $this->uri_ports[$this->getScheme()])){
-            return (int) $this->parsed_uri['port'];
-        } else{
-            return null | $this->uri_ports[$this->getScheme()];
-        }
+        return null;
     }
 
     /**
@@ -195,7 +194,7 @@ class Uri implements UriInterface
     {
         $path = $this->array_value_or_empty_string("path");
         $path = urldecode($path); // decodes first to ensure no double-encoding
-        return urlencode($path);
+        return $path;
     }
 
     /**
@@ -221,6 +220,12 @@ class Uri implements UriInterface
     public function getQuery()
     {
         $query = $this->array_value_or_empty_string("query");
+        if (!empty($query)){
+            $value_key_pair = explode('&', $query);
+            foreach ($value_key_pair as $pair){
+
+            }
+        }
         return urlencode($query);
     }
 
@@ -421,8 +426,7 @@ class Uri implements UriInterface
      * @see http://tools.ietf.org/html/rfc3986#section-4.1
      * @return string
      */
-    public function __toString()
-    {
+    public function __toString() {
         $uri = "";
 
         $scheme = $this->getScheme();

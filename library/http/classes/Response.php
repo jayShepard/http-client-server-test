@@ -5,6 +5,7 @@ namespace pillr\library\http;
 use \Psr\Http\Message\ResponseInterface as ResponseInterface;
 
 use \pillr\library\http\Message         as  Message;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Representation of an outgoing, server-side response.
@@ -25,7 +26,7 @@ class Response extends Message implements ResponseInterface
 {
     protected $status_code, $status_reason;
 
-    function __construct($protocol, $body, $status_code, $status_reason = ""){
+    function __construct($protocol, StreamInterface $body, $status_code, $status_reason = ""){
         parent::__construct($protocol, $body);
         $this->status_code = $status_code;
         $this->status_reason = $status_reason;
