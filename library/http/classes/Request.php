@@ -29,17 +29,13 @@ use Psr\Log\InvalidArgumentException;
  * message and return an instance that contains the changed state.
  */
 class Request extends Message implements RequestInterface{
-    protected $method;
+    protected $method, $uri, $message;
     private $possible_methods = ['GET', 'POST'];
 
-    function __construct($protocol, $method, UriInterface $uri){
-        parent::__construct($protocol);
-
-        if (in_array($method, $this->possible_methods)) {
-            $this->method = $method;
-        }else{
-            throw new InvalidArgumentException("Invalid method: $method");
-        }
+    function __construct($protocol, $method, UriInterface $uri, $body){
+        parent::__construct($protocol, $body);
+        $this->method = $method;
+        $this->uri =$uri;
     }
 
     /**
@@ -60,7 +56,7 @@ class Request extends Message implements RequestInterface{
      */
     public function getRequestTarget()
     {
-        return "/";
+        return empty($this->uri) ? "/" : $this->uri.__toString();
     }
 
     /**
@@ -82,7 +78,9 @@ class Request extends Message implements RequestInterface{
      */
     public function withRequestTarget($requestTarget)
     {
-
+        $new  = clone $this;
+        $new->uri = new Uri($requestTarget);
+        return $new;
     }
 
     /**
@@ -110,9 +108,11 @@ class Request extends Message implements RequestInterface{
      * @return self
      * @throws \InvalidArgumentException for invalid HTTP methods.
      */
-    public function withMethod($method)
+    public function withMethod($method) //TODO: Add in error handling
     {
-
+        $new = clone $this;
+        $new->method = $method;
+        return $new;
     }
 
     /**
@@ -126,7 +126,7 @@ class Request extends Message implements RequestInterface{
      */
     public function getUri()
     {
-
+        return $this->uri;
     }
 
     /**
@@ -159,9 +159,14 @@ class Request extends Message implements RequestInterface{
      * @param bool $preserveHost Preserve the original state of the Host header.
      * @return self
      */
-    public function withUri(UriInterface $uri, $preserveHost = false)
-    {
-
+    public function withUri(UriInterface $uri, $preserveHost = false){ //TODO: review this, spec is contradictory
+        $new = clone $this;
+        if($preserveHost){
+            $new->uri = $uri.$this->withMethod($this->method);
+        } else{
+            $new->uri = $uri;
+        }
+        return $new;
     }
 
 
