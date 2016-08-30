@@ -14,8 +14,8 @@ class Stream implements StreamInterface
 {
     protected $stream;
 
-    function __construct($source){
-        $this->stream = fopen($source, 'r');
+    function __construct($source, $mode='r'){
+        $this->stream = fopen($source, $mode);
     }
 
     /**
@@ -34,7 +34,12 @@ class Stream implements StreamInterface
      */
     public function __toString()
     {
-
+        try{
+            $this->rewind();
+            $this->getContents();
+        }catch (\Exception $e){
+            return '';
+        }
     }
 
     /**
@@ -56,6 +61,13 @@ class Stream implements StreamInterface
      */
     public function detach()
     {
+        if (isset($this->stream)){
+            $resource = $this->stream;
+            unset($this->stream);
+            return $resource;
+        } else{
+            return null;
+        }
 
     }
     /**
@@ -65,7 +77,11 @@ class Stream implements StreamInterface
      */
     public function getSize()
     {
-
+        $stat = fstat($this->stream);
+        if (isset($stat['size'])){
+            return $stat['size'];
+        }
+        return null;
     }
 
     /**
@@ -118,7 +134,10 @@ class Stream implements StreamInterface
      */
     public function seek($offset, $whence = SEEK_SET)
     {
-        fseek($this->stream, $offset, $whence);
+        $seek = fseek($this->stream, $offset, $whence);
+        if($seek == -1){
+            throw new \RuntimeException("Seek error");
+        }
     }
 
     /**
@@ -145,7 +164,9 @@ class Stream implements StreamInterface
      */
     public function isWritable()
     {
-
+        $write_modes = ['r+', 'w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+'];
+        $mode = $this->getMetadata('mode');
+        return in_array($mode, $write_modes);
     }
 
     /**
@@ -157,7 +178,7 @@ class Stream implements StreamInterface
      */
     public function write($string){
         $written = fwrite($this->stream, $string);
-        if (!$written){
+        if ($written === false){
             throw new \RuntimeException("Unable to write");
         } else{
             return $written;
@@ -171,7 +192,9 @@ class Stream implements StreamInterface
      */
     public function isReadable()
     {
-
+        $read_modes = ['r', 'r+', 'w+', 'a+', 'x+', 'c+'];
+        $mode = $this->getMetadata('mode');
+        return in_array($mode, $read_modes);
     }
 
     /**
@@ -187,7 +210,7 @@ class Stream implements StreamInterface
     public function read($length)
     {
         $data = fread($this->stream, $length);
-        if (!$data){
+        if ($data === false){
             throw new \RuntimeException("Read error");
         }else{
             return empty($data) ? "" : $data;
@@ -204,7 +227,7 @@ class Stream implements StreamInterface
     public function getContents()
     {
         $content = stream_get_contents($this->stream);
-        if (!$content){
+        if ($content === false){
             throw new \RuntimeException("Read error");
         }else{
             return $content;
