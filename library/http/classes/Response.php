@@ -27,7 +27,7 @@ class Response extends Message implements ResponseInterface
     protected $status_code, $status_reason;
 
     function __construct($protocol, $status_code, $status_reason = "", array $header, $body){
-        parent::__construct($protocol, $header, $body);
+        parent::__construct(floatval($protocol), $header, $body);
         $this->status_code = $status_code;
         $this->status_reason = $status_reason;
     }
@@ -89,6 +89,6 @@ class Response extends Message implements ResponseInterface
      */
     public function getReasonPhrase()
     {
-        empty($this->status_reason) ? "" : $this->status_reason;
+        return $this->status_reason;
     }
 }

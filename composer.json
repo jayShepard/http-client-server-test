@@ -1,6 +1,7 @@
 {
     "require": {
-        "monolog/monolog": "^1.17"
+        "monolog/monolog": "^1.17",
+        "phpunit/phpunit": "5.5.*"
     },
     "autoload": {
         "classmap": [

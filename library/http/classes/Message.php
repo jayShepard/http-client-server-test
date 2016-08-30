@@ -22,9 +22,8 @@ class Message implements MessageInterface
 {
 
     protected $protocol, $headers, $body;
-    private $possible_protocols = ['1.0', '1.1'];
 
-    function __construct($protocol = '1.0', array $headers = [], $body){
+    function __construct($protocol = '1.1', array $headers = [], $body){
         $this->protocol = $protocol;
         $this->headers = $headers;
         $this->body = $body;
@@ -91,7 +90,9 @@ class Message implements MessageInterface
      */
     public function getHeaders()
     {
-
+        foreach ($this->headers as $name => $values){
+            echo $name . ": ". $values."<br>";
+        }
     }
 
     /**
