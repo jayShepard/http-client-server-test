@@ -8,16 +8,6 @@ use \pillr\library\http\Uri      as Uri;
 
 class TestHttpServer extends \PHPUnit_Framework_TestCase {
 
-    public function testUri(){
-        $uri_string = 'https://pillrcompany.com/interns/test?psr=true';
-        $uri = new Uri($uri_string);
-
-        $this->assertEquals(
-            $uri->__toString(),
-            $uri_string
-        );
-    }
-
     public function testRequest() {
         // *
  // * - Protocol version
@@ -26,7 +16,7 @@ class TestHttpServer extends \PHPUnit_Framework_TestCase {
  // * - Headers
  // * - Message body
 
-        $uri_string = 'https://pillrcompany.com/interns/test?psr=true';
+        $uri_string = 'http://pillrcompany.com/interns/test?psr=true';
 
         $httpRequest =  new HttpRequest(
             '1.1',

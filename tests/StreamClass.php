@@ -14,7 +14,7 @@ class StreamTest extends \PHPUnit_Framework_TestCase{
 
     public function testStream()
     {
-        $url_link = 'http://www.pillrcompany.com/interns/test?psr=true';
+        $url_link = 'http://google.com';
         $stream = new Stream($url_link);
 
         $this->assertEquals(
@@ -22,6 +22,23 @@ class StreamTest extends \PHPUnit_Framework_TestCase{
             false
         );
 
+        $this->assertEquals(
+            $stream->tell(),
+            0
+        );
+
+    }
+    public function test_stream_rewind(){
+        $url_link = 'http://google.com';
+        $stream = new Stream($url_link);
+
+        $stream->seek(100);
+        $this->assertEquals(
+          $stream->tell(),
+            100
+        );
+
+        $stream->rewind();
         $this->assertEquals(
             $stream->tell(),
             0

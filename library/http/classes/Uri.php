@@ -217,7 +217,7 @@ class Uri implements UriInterface
      * @see https://tools.ietf.org/html/rfc3986#section-3.4
      * @return string The URI query string.
      */
-    public function getQuery()
+    public function getQuery() //todo: removed encoding
     {
         $query = $this->array_value_or_empty_string("query");
         if (!empty($query)){
@@ -226,7 +226,7 @@ class Uri implements UriInterface
 
             }
         }
-        return urlencode($query);
+        return $query;
     }
 
     /**
@@ -245,10 +245,10 @@ class Uri implements UriInterface
      * @see https://tools.ietf.org/html/rfc3986#section-3.5
      * @return string The URI fragment.
      */
-    public function getFragment()
+    public function getFragment() //todo:removed encoding
     {
         $fragment = $this->array_value_or_empty_string("fragment");
-        return urlencode($fragment);
+        return $fragment;
     }
 
     /**

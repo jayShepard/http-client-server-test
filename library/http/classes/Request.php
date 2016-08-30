@@ -30,11 +30,11 @@ use Psr\Log\InvalidArgumentException;
  * message and return an instance that contains the changed state.
  */
 class Request extends Message implements RequestInterface{
-    protected $method, $uri, $message;
+    protected $method, $uri, $message, $headers;
     private $possible_methods = ['GET', 'POST'];
 
-    function __construct($protocol, $method, UriInterface $uri, StreamInterface $body){
-        parent::__construct($protocol, $body);
+    function __construct($protocol, $method, UriInterface $uri, array $headers, $body){
+        parent::__construct($protocol, $headers, $body);
         $this->method = $method;
         $this->uri =$uri;
     }
@@ -57,7 +57,11 @@ class Request extends Message implements RequestInterface{
      */
     public function getRequestTarget()
     {
-        return empty($this->uri) ? "/" : "$this->uri";
+        if(empty($this->uri)){
+            return '/';
+        }else{
+            return (string) $this->uri;
+        }
     }
 
     /**

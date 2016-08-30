@@ -26,8 +26,8 @@ class Response extends Message implements ResponseInterface
 {
     protected $status_code, $status_reason;
 
-    function __construct($protocol, StreamInterface $body, $status_code, $status_reason = ""){
-        parent::__construct($protocol, $body);
+    function __construct($protocol, $status_code, $status_reason = "", array $header, $body){
+        parent::__construct($protocol, $header, $body);
         $this->status_code = $status_code;
         $this->status_reason = $status_reason;
     }

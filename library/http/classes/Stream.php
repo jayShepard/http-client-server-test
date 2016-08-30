@@ -152,7 +152,8 @@ class Stream implements StreamInterface
      */
     public function rewind()
     {
-        if(fseek($this->stream, 0) == -1){ //TODO: confirm this works
+        $seek = fseek($this->stream, 0);
+        if( $seek == -1){
             throw new \RuntimeException("Steam is not seekable");
         }
     }

@@ -4,6 +4,8 @@ namespace pillr\library\http;
 
 use Psr\Http\Message\MessageInterface as MessageInterface;
 use Psr\Http\Message\StreamInterface as StreamInterface;
+use Psr\Log\InvalidArgumentException;
+
 /**
  * HTTP messages consist of requests from a client to a server and responses
  * from a server to a client. This interface defines the methods common to
@@ -19,16 +21,13 @@ use Psr\Http\Message\StreamInterface as StreamInterface;
 class Message implements MessageInterface
 {
 
-    protected $protocol, $header, $body;
-    private $possible_protocols = ['1.0', '1.1', '2.0'];
+    protected $protocol, $headers, $body;
+    private $possible_protocols = ['1.0', '1.1'];
 
-    function __construct($protocol, StreamInterface $body){
-        if (in_array($protocol, $this->possible_protocols)) { // TODO: Move validity check into seperate function
-            $this->protocol = (string)$protocol;
-            $this->body = $body;
-        }else{
-            throw new \InvalidArgumentException("Invalid HTTP Protocol: $protocol");
-        }
+    function __construct($protocol = '1.0', array $headers = [], $body){
+        $this->protocol = $protocol;
+        $this->headers = $headers;
+        $this->body = $body;
     }
 
     /**
@@ -55,16 +54,14 @@ class Message implements MessageInterface
      *
      * @param string $version HTTP protocol version
      * @return self
+     * @throws \InvalidArgumentException for invalid protocols
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version) // todo: throw error
     {
-        if ($this->protocol == $version) {
-            return $this;
-        } else {
-            $new = clone $this;
-            $new->protocol = $version;
-            return $new;
-        }
+        $new = clone $this;
+        $new->protocol = $version;
+        return $new;
+
     }
 
     /**
@@ -126,7 +123,11 @@ class Message implements MessageInterface
      */
     public function getHeader($name)
     {
-
+        if(!isset($this->headers[$name])){
+            return [];
+        }else{
+            return array($this->headers[$name]);
+        }
     }
 
     /**
@@ -150,7 +151,12 @@ class Message implements MessageInterface
      */
     public function getHeaderLine($name)
     {
-
+        if(!isset($this->headers[$name])){
+            return '';
+        }else {
+            $string = implode(",", $this->headers[$name]);
+            return $string;
+        }
     }
 
     /**
