@@ -15,7 +15,7 @@ class Stream implements StreamInterface
     protected $stream;
 
     function __construct($source){
-        $this->stream = fopen($source);
+        $this->stream = fopen($source, 'r');
     }
 
     /**
@@ -58,7 +58,6 @@ class Stream implements StreamInterface
     {
 
     }
-
     /**
      * Get the size of the stream if known.
      *
@@ -66,7 +65,7 @@ class Stream implements StreamInterface
      */
     public function getSize()
     {
-        return (int) $this->getMetadata("wrapper_data")[9];
+
     }
 
     /**
@@ -77,7 +76,12 @@ class Stream implements StreamInterface
      */
     public function tell()
     {
-        ftell($this->stream);
+        $tell = ftell($this->stream);
+        if ($tell === false){
+            throw new \RuntimeException("Cannot retrieve current pointer position");
+        } else{
+            return $tell;
+        }
     }
 
     /**
@@ -87,7 +91,7 @@ class Stream implements StreamInterface
      */
     public function eof()
     {
-        feof($this->stream);
+        return (bool) feof($this->stream);
     }
 
     /**
